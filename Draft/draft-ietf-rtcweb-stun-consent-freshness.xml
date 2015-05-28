@@ -167,14 +167,13 @@
       document. The consent mechanism does not update the ICE procedures
       defined in <xref target="RFC5245"></xref>.</t>
 
-      <t>Consent is obtained only by full ICE implementations. ICE-lite agent
-      defined in section 2.7 of <xref target="RFC5245"></xref> does not
-      generate connectivity checks or runs the ICE state machine, it only
-      needs to be able to respond to connectivity checks. Hence an ICE-lite
-      agent will not generate consent checks, but will just respond to consent
-      checks it receives. No changes are required to ICE-lite implementations
-      in order to respond to consent checks, as they are processed as normal
-      ICE connectivity checks.</t>
+      <t>Consent is obtained only by full ICE implementations. An ICE-lite
+      agent (as defined in section 2.7 of <xref target="RFC5245"></xref>) does
+      not generate connectivity checks or run the ICE state machine. An
+      ICE-lite agent does not generate consent checks, it will only respond to
+      any checks that it receives. No changes are required to ICE-lite
+      implementations in order to respond to consent checks, as they are
+      processed as normal ICE connectivity checks.</t>
     </section>
 
     <section anchor="sec-applic" title="Applicability">
@@ -182,9 +181,9 @@
       consent to send using ICE. Verification of peer consent before sending
       traffic is necessary in deployments like WebRTC to ensure that a
       malicious JavaScript cannot use the browser as a platform for launching
-      attacks. Section 4.4 and section 5.3 of <xref
-      target="I-D.ietf-rtcweb-security-arch"></xref> explain why webRTC
-      complaint browser must implement consent.</t>
+      attacks. Section 4.4 and Section 5.3 of <xref
+      target="I-D.ietf-rtcweb-security-arch"></xref> further explains the
+      value of obtaining and maintaining consent.</t>
 
       <t>Other Applications that have similar security requirements to verify
       peer's consent before sending non-ICE packets can use the consent
@@ -222,17 +221,16 @@
       target="RFC5245"></xref>. If consent is performed then there is no need
       to send keepalive messages.</t>
 
-      <t>When secure media (Secure Real-time Transport Protocol (SRTP)/ Secure
-      RTP Control Protocol (SRTCP)) is used the following considerations are
-      applicable. SRTP is encrypted and authenticated with symmetric keys;
-      that is, both sender and receiver know the keys. With two party
-      sessions, receipt of an authenticated packet from the single remote
-      party is a strong assurance the packet came from that party. However,
-      when a session involves more than two parties, all of whom know each
-      other's keys, any of those parties could have sent (or spoofed) the
-      packet. Such shared key distributions are possible with some <xref
-      target="RFC3830">MIKEY</xref> modes, <xref target="RFC4568">Security
-      Descriptions</xref>, and <xref
+      <t>When Secure Real-time Transport Protocol (SRTP) is used, the
+      following considerations are applicable. SRTP is encrypted and
+      authenticated with symmetric keys; that is, both sender and receiver
+      know the keys. With two party sessions, receipt of an authenticated
+      packet from the single remote party is a strong assurance the packet
+      came from that party. However, when a session involves more than two
+      parties, all of whom know each other's keys, any of those parties could
+      have sent (or spoofed) the packet. Such shared key distributions are
+      possible with some <xref target="RFC3830">MIKEY</xref> modes, <xref
+      target="RFC4568">Security Descriptions</xref>, and <xref
       target="I-D.ietf-avtcore-srtp-ekt">EKT</xref>. Thus, in such shared
       keying distributions, receipt of an authenticated SRTP packet is not
       sufficient to verify consent.</t>
@@ -245,10 +243,10 @@
     <section title="Solution">
       <t>Initial consent to send traffic is obtained using <xref
       target="RFC5245">ICE</xref>. An endpoint gains consent to send on a
-      candidate pair when the pair enters Succeeded ICE state. This document
-      establishes a 30 second expiry time on consent. 30 second timeout period
-      is selected so that consent checks could be sent between 5 to 7 times to
-      handle packet loss.</t>
+      candidate pair when the pair enters the Succeeded ICE state. This
+      document establishes a 30 second expiry time on consent. 30 second
+      timeout period is selected so that consent checks could be sent between
+      5 to 7 times to handle packet loss.</t>
 
       <t>ICE does not identify when consent to send traffic ends. This
       document describes two ways in which consent to send ends: expiration of
@@ -407,8 +405,8 @@
       transaction ID to be uniformly and randomly chosen from the interval 0
       .. 2**96-1, and be cryptographically strong. This is good enough
       security against an off-path attacker replaying old STUN consent
-      responses. Consent Verification to avoid attacks using browser as an
-      attack platform against machines is discussed in sections 3.3 and 4.2 of
+      responses. Consent Verification to avoid attacks using a browser as an
+      attack platform against machines is discussed in Sections 3.3 and 4.2 of
       <xref target="I-D.ietf-rtcweb-security"></xref>.</t>
 
       <t>The security considerations discussed in <xref
