@@ -167,12 +167,14 @@
       document. The consent mechanism does not update the ICE procedures
       defined in <xref target="RFC5245"></xref>.</t>
 
-      <t>Consent is obtained only by full ICE implementations. An ICE-lite
-      implementation as defined in section 2.7 of <xref
-      target="RFC5245"></xref> will not generate consent checks, but will just
-      respond to consent checks it receives. No changes are required to
-      ICE-lite implementations in order to respond to consent checks, as they
-      are processed as normal ICE connectivity checks.</t>
+      <t>Consent is obtained only by full ICE implementations. ICE-lite agent
+      defined in section 2.7 of <xref target="RFC5245"></xref> does not
+      generate connectivity checks or runs the ICE state machine, it only
+      needs to be able to respond to connectivity checks. Hence an ICE-lite
+      agent will not generate consent checks, but will just respond to consent
+      checks it receives. No changes are required to ICE-lite implementations
+      in order to respond to consent checks, as they are processed as normal
+      ICE connectivity checks.</t>
     </section>
 
     <section anchor="sec-applic" title="Applicability">
@@ -180,13 +182,13 @@
       consent to send using ICE. Verification of peer consent before sending
       traffic is necessary in deployments like WebRTC to ensure that a
       malicious JavaScript cannot use the browser as a platform for launching
-      attacks.Section 4.4 and section 5.3 of <xref
-      target="I-D.ietf-rtcweb-security-arch"></xref> explains why webRTC
-      application needs consent.</t>
+      attacks. Section 4.4 and section 5.3 of <xref
+      target="I-D.ietf-rtcweb-security-arch"></xref> explain why webRTC
+      complaint browser must implement consent.</t>
 
-      <t>Other Applications that have similar security requirement where it is
-      required to verify peer's consent before sending non-ICE packets can use
-      the consent mechanism described in this draft.</t>
+      <t>Other Applications that have similar security requirements to verify
+      peer's consent before sending non-ICE packets can use the consent
+      mechanism described in this document.</t>
     </section>
 
     <section anchor="sec-term" title="Terminology">
@@ -196,9 +198,9 @@
       target="RFC2119"></xref>.</t>
 
       <t><list style="hanging">
-          <t hangText="Consent:">The mechanism of obtaining permission to send
-          to a remote transport address. Initial consent is obtained using
-          ICE.</t>
+          <t hangText="Consent:">The mechanism of obtaining permission from
+          the remote endpoint to send non-ICE traffic to a remote transport
+          address. Consent is obtained using ICE.</t>
 
           <t hangText="Consent Freshness:">Maintaining and renewing consent
           over time.</t>
@@ -220,8 +222,9 @@
       target="RFC5245"></xref>. If consent is performed then there is no need
       to send keepalive messages.</t>
 
-      <t>When secure media (SRTP/SRTCP) is used the following considerations
-      are applicable. SRTP is encrypted and authenticated with symmetric keys;
+      <t>When secure media (Secure Real-time Transport Protocol (SRTP)/ Secure
+      RTP Control Protocol (SRTCP)) is used the following considerations are
+      applicable. SRTP is encrypted and authenticated with symmetric keys;
       that is, both sender and receiver know the keys. With two party
       sessions, receipt of an authenticated packet from the single remote
       party is a strong assurance the packet came from that party. However,
@@ -233,13 +236,19 @@
       target="I-D.ietf-avtcore-srtp-ekt">EKT</xref>. Thus, in such shared
       keying distributions, receipt of an authenticated SRTP packet is not
       sufficient to verify consent.</t>
+
+      <t>The mechanism proposed in the document is an optional extension to
+      the ICE protocol, it can be deployed at one end of the two-party
+      communication session without impact on the other party.</t>
     </section>
 
     <section title="Solution">
       <t>Initial consent to send traffic is obtained using <xref
       target="RFC5245">ICE</xref>. An endpoint gains consent to send on a
-      candidate pair when the pair enters Succeeded ICE state. consent; this
-      document establishes a 30 second expiry time on consent.</t>
+      candidate pair when the pair enters Succeeded ICE state. This document
+      establishes a 30 second expiry time on consent. 30 second timeout period
+      is selected so that consent checks could be sent between 5 to 7 times to
+      handle packet loss.</t>
 
       <t>ICE does not identify when consent to send traffic ends. This
       document describes two ways in which consent to send ends: expiration of
@@ -252,10 +261,14 @@
         (i.e., a candidate pair has been marked as Succeeded), consent MUST be
         maintained following the procedure described in this document.</t>
 
-        <t>An endpoint MUST NOT send data other than paced STUN connectivity
-        checks or responses toward any transport address unless the receiving
-        endpoint consents to receive data. That is, no application data (e.g.,
-        RTP or DTLS) can be sent until consent is obtained.</t>
+        <t>An endpoint MUST NOT send data toward any transport address unless
+        the receiving endpoint has consented to receive data, unless the
+        messages are those that are used to establish consent. Connectivity
+        checks that are paced as described in Section 16 of <xref
+        target="RFC5245"></xref> and responses to connectivity checks are
+        permitted. That is, no application data (e.g., RTP or Datagram
+        Transport Layer Security (DTLS)) can be sent until consent is
+        obtained.</t>
 
         <t>Explicit consent to send is obtained and maintained by sending an
         STUN binding request to the remote peer's transport address and
@@ -378,16 +391,25 @@
       an API hook that generates an event when consent has expired for a given
       5-tuple, meaning that transmission of data has ceased. This could
       indicate what application data is affected, such as media or data
-      channels.</t>
+      channels. The circuit breaker algorithm discussed in section 7.1 of
+      <xref target="I-D.ietf-rtcweb-rtp-usage"></xref> could also be one of
+      the reasons for ceasing transmission of media and to notify the
+      application about the loss of ability to transmit data.</t>
+
+      <t>WebRTC client application may in-turn notify WebRTC server about loss
+      of consent so that it can track frequency and duration of loss of
+      consent, e.g., to assist in troubleshooting application problems.</t>
     </section>
 
     <section title="Security Considerations">
-      <t>This document describes a security mechanism details of which are
+      <t>This document describes a security mechanism, details of which are
       mentioned in section 4.1 and section 4.2. Consent requires 96 bits
       transaction ID to be uniformly and randomly chosen from the interval 0
       .. 2**96-1, and be cryptographically strong. This is good enough
       security against an off-path attacker replaying old STUN consent
-      responses.</t>
+      responses. Consent Verification to avoid attacks using browser as an
+      attack platform against machines is discussed in sections 3.3 and 4.2 of
+      <xref target="I-D.ietf-rtcweb-security"></xref>.</t>
 
       <t>The security considerations discussed in <xref
       target="RFC5245"></xref> should also be taken into account.</t>
@@ -416,11 +438,14 @@
       <?rfc include="reference.RFC.6263"?>
 
       <?rfc include="reference.RFC.5389"?>
+
+      <?rfc include="reference.I-D.ietf-rtcweb-security-arch"
+?>
+
+      <?rfc include="reference.I-D.ietf-rtcweb-security"?>
     </references>
 
     <references title="Informative References">
-      <?rfc include="reference.I-D.ietf-rtcweb-security-arch"?>
-
       <?rfc include="reference.RFC.3830"?>
 
       <?rfc include="reference.RFC.4568"?>
@@ -428,6 +453,8 @@
       <?rfc include="reference.RFC.6062"?>
 
       <?rfc include="reference.I-D.ietf-tsvwg-rtcweb-qos"?>
+
+      <?rfc include="reference.I-D.ietf-rtcweb-rtp-usage"?>
 
       <?rfc include="reference.I-D.ietf-avtcore-srtp-ekt"?>
 
