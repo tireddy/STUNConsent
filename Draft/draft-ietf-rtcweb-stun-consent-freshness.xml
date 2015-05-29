@@ -168,7 +168,7 @@
       defined in <xref target="RFC5245"></xref>.</t>
 
       <t>Consent is obtained only by full ICE implementations. An ICE-lite
-      agent (as defined in section 2.7 of <xref target="RFC5245"></xref>) does
+      agent (as defined in Section 2.7 of <xref target="RFC5245"></xref>) does
       not generate connectivity checks or run the ICE state machine. An
       ICE-lite agent does not generate consent checks, it will only respond to
       any checks that it receives. No changes are required to ICE-lite
@@ -218,8 +218,11 @@
       request/response mechanism for consent freshness. ICE can be used for
       that mechanism because ICE implementations are already required to
       continue listening for ICE messages, as described in section 10 of <xref
-      target="RFC5245"></xref>. If consent is performed then there is no need
-      to send keepalive messages.</t>
+      target="RFC5245"></xref>. From a keepalive perspective, consent requests
+      are considered media traffic. Because of that, dedicated keepalives
+      (e.g. STUN Binding Indications) are not sent on candidate pairs where
+      consent requests are sent, in accordance with Section 20.2.3 of <xref
+      target="RFC5245"></xref>.</t>
 
       <t>When Secure Real-time Transport Protocol (SRTP) is used, the
       following considerations are applicable. SRTP is encrypted and
@@ -389,14 +392,7 @@
       an API hook that generates an event when consent has expired for a given
       5-tuple, meaning that transmission of data has ceased. This could
       indicate what application data is affected, such as media or data
-      channels. The circuit breaker algorithm discussed in section 7.1 of
-      <xref target="I-D.ietf-rtcweb-rtp-usage"></xref> could also be one of
-      the reasons for ceasing transmission of media and to notify the
-      application about the loss of ability to transmit data.</t>
-
-      <t>WebRTC client application may in-turn notify WebRTC server about loss
-      of consent so that it can track frequency and duration of loss of
-      consent, e.g., to assist in troubleshooting application problems.</t>
+      channels. </t>
     </section>
 
     <section title="Security Considerations">
@@ -451,8 +447,6 @@
       <?rfc include="reference.RFC.6062"?>
 
       <?rfc include="reference.I-D.ietf-tsvwg-rtcweb-qos"?>
-
-      <?rfc include="reference.I-D.ietf-rtcweb-rtp-usage"?>
 
       <?rfc include="reference.I-D.ietf-avtcore-srtp-ekt"?>
 
