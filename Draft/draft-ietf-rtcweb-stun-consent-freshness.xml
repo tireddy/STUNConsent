@@ -135,9 +135,9 @@
     <workgroup>RTCWEB</workgroup>
 
     <abstract>
-      <t>To prevent browsers supporting WebRTC from being used to launch
-      denial of service attacks by sending media to unwilling victims,
-      periodic consent to send needs to be obtained from remote endpoints.</t>
+      <t>To prevent WebRTC applications, such as browsers, from launching
+      attacks by sending media to unwilling victims, periodic consent to send
+      needs to be obtained from remote endpoints.</t>
 
       <t>This document describes a consent mechanism using a new Session
       Traversal Utilities for NAT (STUN) usage.</t>
@@ -217,7 +217,7 @@
       necessary for consent to continue sending traffic. Thus, we need a
       request/response mechanism for consent freshness. ICE can be used for
       that mechanism because ICE implementations are already required to
-      continue listening for ICE messages, as described in section 10 of <xref
+      continue listening for ICE messages, as described in Section 10 of <xref
       target="RFC5245"></xref>. From a keepalive perspective, consent requests
       are considered media traffic. Because of that, dedicated keepalives
       (e.g. STUN Binding Indications) are not sent on candidate pairs where
@@ -247,9 +247,10 @@
       <t>Initial consent to send traffic is obtained using <xref
       target="RFC5245">ICE</xref>. An endpoint gains consent to send on a
       candidate pair when the pair enters the Succeeded ICE state. This
-      document establishes a 30 second expiry time on consent. 30 second
-      timeout period is selected so that consent checks could be sent between
-      5 to 7 times to handle packet loss.</t>
+      document establishes a 30 second expiry time on consent. The timeout
+      period of 30 seconds is chosen short enough to tolerate the attack of
+      media being sent to the victim before consent is revoked and long enough
+      not result in false positive of consent expiration. </t>
 
       <t>ICE does not identify when consent to send traffic ends. This
       document describes two ways in which consent to send ends: expiration of
@@ -262,14 +263,13 @@
         (i.e., a candidate pair has been marked as Succeeded), consent MUST be
         maintained following the procedure described in this document.</t>
 
-        <t>An endpoint MUST NOT send data toward any transport address unless
-        the receiving endpoint has consented to receive data, unless the
-        messages are those that are used to establish consent. Connectivity
-        checks that are paced as described in Section 16 of <xref
-        target="RFC5245"></xref> and responses to connectivity checks are
-        permitted. That is, no application data (e.g., RTP or Datagram
-        Transport Layer Security (DTLS)) can be sent until consent is
-        obtained.</t>
+        <t>An endpoint MUST NOT send data other than the messages used to
+        establish consent unless the receiving endpoint has consented to
+        receive data. Connectivity checks that are paced as described in
+        Section 16 of <xref target="RFC5245"></xref> and responses to
+        connectivity checks are permitted. That is, no application data (e.g.,
+        RTP or Datagram Transport Layer Security (DTLS)) can be sent until
+        consent is obtained.</t>
 
         <t>Explicit consent to send is obtained and maintained by sending an
         STUN binding request to the remote peer's transport address and
@@ -392,12 +392,15 @@
       an API hook that generates an event when consent has expired for a given
       5-tuple, meaning that transmission of data has ceased. This could
       indicate what application data is affected, such as media or data
-      channels. </t>
+      channels. Applications that use the RTWEB transport will need to be
+      notified when transmission ceases due to expiry of consent. The
+      mechanism of how applications are made aware of consent expiration is
+      outside the scope of the document.</t>
     </section>
 
     <section title="Security Considerations">
       <t>This document describes a security mechanism, details of which are
-      mentioned in section 4.1 and section 4.2. Consent requires 96 bits
+      mentioned in Section 4.1 and Section 4.2. Consent requires 96 bits
       transaction ID to be uniformly and randomly chosen from the interval 0
       .. 2**96-1, and be cryptographically strong. This is good enough
       security against an off-path attacker replaying old STUN consent
