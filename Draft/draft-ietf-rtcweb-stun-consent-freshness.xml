@@ -220,10 +220,11 @@
       request/response mechanism for consent freshness. ICE can be used for
       that mechanism because ICE implementations are already required to
       continue listening for ICE messages, as described in Section 10 of <xref
-      target="RFC5245"></xref>. From a keepalive perspective, consent requests
-      are considered media traffic. Because of that, dedicated keepalives
-      (e.g. STUN Binding Indications) are not sent on candidate pairs where
-      consent requests are sent, in accordance with Section 20.2.3 of <xref
+      target="RFC5245"></xref>. STUN binding requests sent for consent
+      freshness also serve the keepalive purpose (i.e to keep NAT bindings
+      alive). Because of that, dedicated keepalives (e.g. STUN Binding
+      Indications) are not sent on candidate pairs where consent requests are
+      sent, in accordance with Section 20.2.3 of <xref
       target="RFC5245"></xref>.</t>
 
       <t>When Secure Real-time Transport Protocol (SRTP) is used, the
@@ -249,10 +250,10 @@
       <t>Initial consent to send traffic is obtained using <xref
       target="RFC5245">ICE</xref>. An endpoint gains consent to send on a
       candidate pair when the pair enters the Succeeded ICE state. This
-      document establishes a 30 second expiry time on consent. The timeout
-      period of 30 seconds is chosen short enough to tolerate the attack of
-      media being sent to the victim before consent is revoked and long enough
-      not result in false positive of consent expiration.</t>
+      document establishes a 30 second expiry time on consent. 30 seconds was
+      chosen to balance the need to minimize the time taken to respond to a
+      loss of consent with the desire to reduce the occurrence of spurious
+      failures.</t>
 
       <t>ICE does not identify when consent to send traffic ends. This
       document describes two ways in which consent to send ends: expiration of
